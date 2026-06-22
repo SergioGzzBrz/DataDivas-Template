@@ -4,10 +4,8 @@
  * License: CC0
  * Source: me
  * Description: Segment tree with ability to add or set values of large intervals, and compute max of intervals.
- * Can be changed to other things.
- * Use with a bump allocator for better performance, and SmallPtr or implicit indices to save memory.
  * Time: O(\log N).
- * Usage: Node* tr = new Node(v, 0, sz(v));
+ * Usage: Node st = Node(arr, 0, sz(arr)); query: [l, r)
  * Status: stress-tested a bit
  */
 #pragma once
@@ -15,10 +13,11 @@
 #include "../various/BumpAllocator.h"
 
 const ll inf = 1e9;
-struct Node {
+struct Node { 
 	Node *l = 0, *r = 0;
-	ll lo, hi, mset = inf, madd = 0, val = -inf;
-	Node(ll lo,ll hi):lo(lo),hi(hi){} // Large interval of -inf
+  ll defaultMset = inf, defaultVal = -inf;
+	ll lo, hi, mset = defaultMset, madd = 0, val = defaultVal;
+	Node(ll lo,ll hi):lo(lo),hi(hi){} // Large interval of defaultVal
 	Node(vi& v, ll lo, ll hi) : lo(lo), hi(hi) {
 		if (lo + 1 < hi) {
 			ll mid = lo + (hi - lo)/2;
@@ -28,7 +27,7 @@ struct Node {
 		else val = v[lo];
 	}
 	ll query(ll L, ll R) {
-		if (R <= lo || hi <= L) return -inf;
+		if (R <= lo || hi <= L) return defaultVal;
 		if (L <= lo && hi <= R) return val;
 		push();
 		return max(l->query(L, R), r->query(L, R));
@@ -44,7 +43,7 @@ struct Node {
 	void add(ll L, ll R, ll x) {
 		if (R <= lo || hi <= L) return;
 		if (L <= lo && hi <= R) {
-			if (mset != inf) mset += x;
+			if (mset != defaultMset) mset += x;
 			else madd += x;
 			val += x;
 		}
@@ -58,8 +57,8 @@ struct Node {
 			ll mid = lo + (hi - lo)/2;
 			l = new Node(lo, mid); r = new Node(mid, hi);
 		}
-		if (mset != inf)
-			l->set(lo,hi,mset), r->set(lo,hi,mset), mset = inf;
+		if (mset != defaultMset)
+			l->set(lo,hi,mset), r->set(lo,hi,mset), mset = defaultMset;
 		else if (madd)
 			l->add(lo,hi,madd), r->add(lo,hi,madd), madd = 0;
 	}

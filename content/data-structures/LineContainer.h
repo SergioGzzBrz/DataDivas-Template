@@ -5,6 +5,7 @@
  * Source: own work
  * Description: Container where you can add lines of the form kx+m, and query maximum values at points x.
  *  Useful for dynamic programming (``convex hull trick'').
+ * To get minimum query with negative values: use -m and -k and negate the result: min[f(x)] = -max[-f(x)]
  * Time: O(\log N)
  * Status: stress-tested
  */

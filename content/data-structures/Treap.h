@@ -1,44 +1,51 @@
 /**
- * Author: someone on Codeforces
- * Date: 2017-03-14
+ * Author: Gemini
+ * Date: 2026-07-03
  * Source: folklore
  * Description: A short self-balancing tree. It acts as a
- *  sequential container with log-time splits/joins, and
+ *  \textit{binary tree with log-time splits/joins based on its value}, and
  *  is easy to augment with additional data.
  * Time: $O(\log N)$
- * Status: stress-tested
+ * Status: It worked on a few treap problems
  */
 #pragma once
 
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
 struct Node {
 	Node *l = 0, *r = 0;
-	int val, y, c = 1;
-	Node(int val) : val(val), y(rand()) {}
+	int key, y, c = 1;
+	long long sum; 
+	
+	Node(int key) : key(key), y(rng()), sum(key) {}
 	void recalc();
 };
 
 int cnt(Node* n) { return n ? n->c : 0; }
-void Node::recalc() { c = cnt(l) + cnt(r) + 1; }
+long long get_sum(Node* n) { return n ? n->sum : 0; }
 
-template<class F> void each(Node* n, F f) {
-	if (n) { each(n->l, f); f(n->val); each(n->r, f); }
+void Node::recalc() { 
+	c = cnt(l) + cnt(r) + 1; 
+	sum = get_sum(l) + get_sum(r) + key; // Modify for problem-specific data
 }
 
+// Splits Treap into L (keys <= k) and R (keys > k)
 pair<Node*, Node*> split(Node* n, int k) {
 	if (!n) return {};
-	if (cnt(n->l) >= k) { // "n->val >= k" for lower_bound(k)
-		auto [L,R] = split(n->l, k);
-		n->l = R;
-		n->recalc();
-		return {L, n};
-	} else {
-		auto [L,R] = split(n->r,k - cnt(n->l) - 1); // and just "k"
+	if (n->key <= k) {
+		auto [L, R] = split(n->r, k);
 		n->r = L;
 		n->recalc();
 		return {n, R};
+	} else {
+		auto [L, R] = split(n->l, k);
+		n->l = R;
+		n->recalc();
+		return {L, n};
 	}
 }
 
+// Merges L and R. Assumes max(L->key) < min(R->key)
 Node* merge(Node* l, Node* r) {
 	if (!l) return r;
 	if (!r) return l;
@@ -51,15 +58,16 @@ Node* merge(Node* l, Node* r) {
 	}
 }
 
-Node* ins(Node* t, Node* n, int pos) {
-	auto [l,r] = split(t, pos);
-	return merge(merge(l, n), r);
+// Inserts a new node into the correct sorted position
+void insert(Node*& t, Node* n) {
+	auto [L, R] = split(t, n->key);
+	t = merge(merge(L, n), R);
 }
 
-// Example application: move the range [l, r) to index k
-void move(Node*& t, int l, int r, int k) {
-	Node *a, *b, *c;
-	tie(a,b) = split(t, l); tie(b,c) = split(b, r - l);
-	if (k <= l) t = merge(ins(a, b, k), c);
-	else t = merge(a, ins(c, b, k - r));
+// Erases all nodes with exact key 'k' (or just one if you split differently)
+void erase(Node*& t, int k) {
+	auto [L, R] = split(t, k - 1);
+	auto [M, RR] = split(R, k);
+	// Note: if memory limit is tight, delete M here
+	t = merge(L, RR);
 }

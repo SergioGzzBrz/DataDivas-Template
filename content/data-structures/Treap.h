@@ -14,23 +14,22 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 struct Node {
 	Node *l = 0, *r = 0;
-	int key, y, c = 1;
-	long long sum; 
+	ll key, y, c = 1, sum; 
 	
-	Node(int key) : key(key), y(rng()), sum(key) {}
+	Node(ll key) : key(key), y(rng()), sum(key) {}
 	void recalc();
 };
 
-int cnt(Node* n) { return n ? n->c : 0; }
-long long get_sum(Node* n) { return n ? n->sum : 0; }
+ll cnt(Node* n) { return n ? n->c : 0; }
+ll get_sum(Node* n) { return n ? n->sum : 0; }
 
 void Node::recalc() { 
 	c = cnt(l) + cnt(r) + 1; 
-	sum = get_sum(l) + get_sum(r) + key; // Modify for problem-specific data
+	sum = get_sum(l) + get_sum(r) + key;
 }
 
 // Splits Treap into L (keys <= k) and R (keys > k)
-pair<Node*, Node*> split(Node* n, int k) {
+pair<Node*, Node*> split(Node* n, ll k) {
 	if (!n) return {};
 	if (n->key <= k) {
 		auto [L, R] = split(n->r, k);
@@ -65,9 +64,23 @@ void insert(Node*& t, Node* n) {
 }
 
 // Erases all nodes with exact key 'k' (or just one if you split differently)
-void erase(Node*& t, int k) {
+void erase(Node*& t, ll k) {
 	auto [L, R] = split(t, k - 1);
 	auto [M, RR] = split(R, k);
 	// Note: if memory limit is tight, delete M here
 	t = merge(L, RR);
+}
+
+// Unites two Treaps with interleaved keys. 
+// log(n) if dealing with ranges that do not overlap very often. Otherwise nlogn
+Node* unite(Node* l, Node* r) {
+    if (!l) return r;
+    if (!r) return l;
+    
+    if (l->y < r->y) swap(l, r); 
+    auto [L, R] = split(r, l->key);
+    l->l = unite(l->l, L);
+    l->r = unite(l->r, R);
+    l->recalc();
+    return l;
 }

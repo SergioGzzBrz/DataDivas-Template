@@ -4,7 +4,7 @@
  * Source: kactl
  * Description: A short self-balancing tree. It acts as a
  *  \textit{sequential container with log-time splits/joins based on index}, and
- *  is easy to augment with additional data.
+ *  is easy to augment with additional data AND lazy queries / updates (same as ST).
  * Time: $O(\log N)$
  * Status: stress-tested
  */

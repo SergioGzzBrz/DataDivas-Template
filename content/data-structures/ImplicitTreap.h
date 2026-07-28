@@ -5,6 +5,7 @@
  * Description: A short self-balancing tree. It acts as a
  *  \textit{sequential container with log-time splits/joins based on index}, and
  *  is easy to augment with additional data AND lazy queries / updates (same as ST).
+ *  For lazy, add push function before merge and split
  * Time: $O(\log N)$
  * Status: stress-tested
  */
@@ -30,11 +31,10 @@ void Node::recalc() {
 // In-order traversal (reconstructs the dynamic array)
 template <class F>
 void each(Node* n, F f) {
-  if (n) {
-    each(n->l, f);
-    f(n->val);
-    each(n->r, f);
-  }
+  if (!n) return;
+	each(n->l, f);
+	f(n->val);
+	each(n->r, f);
 }
 
 // Splits into L (first k elements) and R (the rest)
@@ -71,20 +71,6 @@ Node* merge(Node* l, Node* r) {
 
 // Inserts a node 'n' at array index 'pos'
 void insert(Node*& t, Node* n, ll pos) {
-  auto [L, R] = split(t, pos);
+  auto [L, R] = split(t, pos-1);
   t = merge(merge(L, n), R);
-}
-
-// Moves the subarray [l, r) so that it starts at index k
-void move(Node*& t, ll l, ll r, ll k) {
-  auto [a, bc] = split(t, l);
-  auto [b, c] = split(bc, r - l);
-
-  if (k <= l) {
-    auto [a1, a2] = split(a, k);
-    t = merge(merge(merge(a1, b), a2), c);
-  } else {
-    auto [c1, c2] = split(c, k - r);
-    t = merge(merge(a, c1), merge(b, c2));
-  }
 }

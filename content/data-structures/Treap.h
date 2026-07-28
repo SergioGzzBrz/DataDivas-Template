@@ -20,6 +20,15 @@ struct Node {
 	void recalc();
 };
 
+// In-order traversal 
+template <class F>
+void each(Node* n, F f) {
+  if (!n) return;
+	each(n->l, f);
+	f(n->val);
+	each(n->r, f);
+}
+
 ll cnt(Node* n) { return n ? n->c : 0; }
 ll get_sum(Node* n) { return n ? n->sum : 0; }
 
@@ -74,13 +83,13 @@ void erase(Node*& t, ll k) {
 // Unites two Treaps with interleaved keys. 
 // log(n) if dealing with ranges that do not overlap very often. Otherwise nlogn
 Node* unite(Node* l, Node* r) {
-    if (!l) return r;
-    if (!r) return l;
-    
-    if (l->y < r->y) swap(l, r); 
-    auto [L, R] = split(r, l->key);
-    l->l = unite(l->l, L);
-    l->r = unite(l->r, R);
-    l->recalc();
-    return l;
+	if (!l) return r;
+	if (!r) return l;
+	
+	if (l->y < r->y) swap(l, r); 
+	auto [L, R] = split(r, l->key);
+	l->l = unite(l->l, L);
+	l->r = unite(l->r, R);
+	l->recalc();
+	return l;
 }

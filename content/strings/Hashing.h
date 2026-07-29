@@ -1,9 +1,8 @@
 
 /**
- * Author: Simon Lindholm
- * Date: 2015-03-15
- * License: CC0
- * Source: own work
+ * Author: Unkown
+ * Date: 2026-07-29
+ * Source: Multiple sources
  * Description:\\
 \begin{minipage}{75mm}
 Self-explanatory methods for string hashing. 
@@ -14,7 +13,7 @@ When comparing $n^2$ strings, change:
 \begin{minipage}{15mm}
 \includegraphics[width=\textwidth]{content/strings/HashingScenarios}
 \end{minipage}
- * Status: stress-tested
+ * Status: Tested many times
  */
 #pragma once
 

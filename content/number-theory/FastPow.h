@@ -1,20 +1,18 @@
 /**
- * Author: Unknown
- * Date: 2026-07-29
+ * Author: Noam527
+ * Date: 2019-04-24
+ * License: CC0
  * Source: folklore
- * Description: Calculates a pow b mod in log(b)
- * Status: Works
+ * Description:
+ * Status: tested
  */
 #pragma once
 
-ll fastpow(ll a, ll b) {
-  ll res = 1;
-  while (b > 0) {
-    if (b & 1) {
-      res = res * a % mod;
-    }
-    a = a * a % mod;
-    b >>= 1;
-  }
-  return res;
+const ll mod = 1000000007; // faster if const
+
+ll fastpow(ll b, ll e) {
+	ll ans = 1;
+	for (; e; b = b * b % mod, e /= 2)
+		if (e & 1) ans = ans * b % mod;
+	return ans;
 }

@@ -15,8 +15,8 @@
 const ll inf = 1e9;
 struct Node { 
 	Node *l = 0, *r = 0;
-  ll defaultMset = inf, defaultVal = -inf;
-	ll lo, hi, mset = defaultMset, madd = 0, val = defaultVal;
+  ll defaultMset = inf, defaultVal = -inf, defaultMadd = 0;
+	ll lo, hi, mset = defaultMset, madd = defaultMadd, val = defaultVal;
 	Node(ll lo,ll hi):lo(lo),hi(hi){} // Large interval of defaultVal
 	Node(vi& v, ll lo, ll hi) : lo(lo), hi(hi) {
 		if (lo + 1 < hi) {
@@ -59,7 +59,7 @@ struct Node {
 		}
 		if (mset != defaultMset)
 			l->set(lo,hi,mset), r->set(lo,hi,mset), mset = defaultMset;
-		else if (madd)
-			l->add(lo,hi,madd), r->add(lo,hi,madd), madd = 0;
+		else if (madd != defaultMadd)
+			l->add(lo,hi,madd), r->add(lo,hi,madd), madd = defaultMadd;
 	}
 };
